@@ -41,7 +41,7 @@ Configure 'composer. json' in the root directory of the project and add the foll
         "type": "npm",
         "name": "amis", // npm package name
         "version": "2.2.0",
-        "only_files": [ // Specify which files are required
+        "only_files": [ // Specify which files are required. After the change, the downloaded directory needs to be deleted, otherwise it cannot be updated
           "sdk/thirds",
           "sdk/helper.css",
           "sdk/iconfont.css",
@@ -64,4 +64,6 @@ Configure 'composer. json' in the root directory of the project and add the foll
 
 ```bash
 composer assets-download
+# or
+composer install # trigger from event
 ```

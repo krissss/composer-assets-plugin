@@ -3,11 +3,14 @@
 namespace Kriss\ComposerAssetsPlugin;
 
 use Composer\Composer;
+use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
+use Composer\Script\ScriptEvents;
+use Composer\Util\Filesystem;
 
-class Plugin implements PluginInterface, Capable
+class Plugin implements PluginInterface, Capable, EventSubscriberInterface
 {
     protected $composer;
     protected $io;
@@ -43,5 +46,22 @@ class Plugin implements PluginInterface, Capable
         return [
             'Composer\Plugin\Capability\CommandProvider' => CommandProvider::class,
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            ScriptEvents::POST_INSTALL_CMD => 'triggerDownload',
+            ScriptEvents::POST_UPDATE_CMD => 'triggerDownload',
+        ];
+    }
+
+    public function triggerDownload()
+    {
+        (new AssetDownloader($this->composer, $this->io, new Filesystem()))
+            ->handle();
     }
 }

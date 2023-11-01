@@ -43,6 +43,10 @@ class AssetDownloader
             }
 
             $savePath = $assetSavePath . '/' . ltrim($asset->save_path, '/');
+            if (file_exists($savePath)) {
+                // skip if installed
+                continue;
+            }
             $tempSavePath = $savePath . '_temp';
 
             $this->io->write("Install asset: {$asset->url} => {$savePath}");

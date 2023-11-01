@@ -41,7 +41,7 @@ composer require kriss/composer-assets-plugin
         "type": "npm",
         "name": "amis", // npm package name
         "version": "2.2.0",
-        "only_files": [ // 指定只要哪些文件
+        "only_files": [ // 指定只要哪些文件，更改后需要删除下载后的目录，否则无法更新
           "sdk/thirds",
           "sdk/helper.css",
           "sdk/iconfont.css",
@@ -64,4 +64,6 @@ composer require kriss/composer-assets-plugin
 
 ```bash
 composer assets-download
+# or
+composer install # trigger from event
 ```
