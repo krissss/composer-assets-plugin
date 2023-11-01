@@ -1,0 +1,28 @@
+{
+  "name": "kriss/composer-assets-plugin",
+  "description": "Download assets to project path",
+  "type": "composer-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Kriss\\ComposerAssetsPlugin\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "kriss",
+      "email": "462679766@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "composer-plugin-api": "^2.0"
+  },
+  "require-dev": {
+    "composer/composer": "^2.6"
+  },
+  "extra": {
+    "class": "Kriss\\ComposerAssetsPlugin\\Plugin",
+    "plugin-optional": true
+  }
+}
