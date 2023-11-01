@@ -6,6 +6,7 @@ use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Util\Filesystem;
 use Kriss\ComposerAssetsPlugin\DTO\ExtraDTO;
+use Throwable;
 
 class AssetDownloader
 {
@@ -94,7 +95,7 @@ class AssetDownloader
      * @param string $url
      * @param string $path
      * @return void
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function download(string $url, string $path)
     {
@@ -112,6 +113,7 @@ class AssetDownloader
      * @param string $targetPath
      * @param array $onlyFiles
      * @return void
+     * @throws Throwable
      */
     private function keepOnlyFiles(string $sourcePath, string $targetPath, array $onlyFiles = [])
     {
@@ -120,16 +122,32 @@ class AssetDownloader
             return;
         }
 
-        foreach ($onlyFiles as $file) {
-            $fromFile = $sourcePath . '/' . $file;
-            $toFile = $targetPath . '/' . $file;
-            $this->filesystem->ensureDirectoryExists(is_dir($toFile) ? $toFile : dirname($toFile));
-            if (!file_exists($fromFile)) {
-                $this->io->warning("file not exist: {$targetPath}");
-                continue;
-            }
-            $this->filesystem->copy($fromFile, $toFile);
+        $backupPath = $targetPath . '_bak';
+        if (file_exists($targetPath)) {
+            // 如果文件存在，先备份，防止移动或者处理文件失败时，用于恢复
+            $this->filesystem->rename($targetPath, $backupPath);
+            // 清空目录，确保如果是清空目录的话可以正确执行
+            $this->filesystem->emptyDirectory($targetPath);
         }
-        $this->filesystem->removeDirectory($sourcePath);
+        try {
+            foreach ($onlyFiles as $file) {
+                $fromFile = $sourcePath . '/' . $file;
+                $toFile = $targetPath . '/' . $file;
+                $this->filesystem->ensureDirectoryExists(is_dir($toFile) ? $toFile : dirname($toFile));
+                if (!file_exists($fromFile)) {
+                    $this->io->warning("file not exist: {$targetPath}");
+                    continue;
+                }
+                $this->filesystem->copy($fromFile, $toFile);
+            }
+        } catch (Throwable $e) {
+            if (file_exists($backupPath)) {
+                $this->filesystem->removeDirectory($targetPath);
+                $this->filesystem->rename($backupPath, $targetPath);
+            }
+            throw $e;
+        } finally {
+            $this->filesystem->removeDirectory($sourcePath);
+        }
     }
 }
