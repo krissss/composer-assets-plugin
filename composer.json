@@ -1,6 +1,6 @@
 {
   "name": "kriss/composer-assets-plugin",
-  "description": "Download assets to project path",
+  "description": "Download assets(js/css/npm/github...) to project path",
   "type": "composer-plugin",
   "license": "MIT",
   "autoload": {

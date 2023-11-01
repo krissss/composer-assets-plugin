@@ -26,14 +26,11 @@ class AssetDownloader
     /**
      * entry
      * @return void
+     * @throws Throwable
      */
     public function handle(): void
     {
         $assetSavePath = $this->getAssetSavePath();
-
-        if (!isset($this->extra->assets_pkgs)) {
-            throw new \InvalidArgumentException('config extra assets-pkgs first');
-        }
 
         foreach ($this->extra->assets_pkgs as $asset) {
             if (!$asset->url || !$asset->save_path) {
@@ -139,6 +136,9 @@ class AssetDownloader
                     continue;
                 }
                 $this->filesystem->copy($fromFile, $toFile);
+            }
+            if (file_exists($backupPath)) {
+                $this->filesystem->removeDirectory($backupPath);
             }
         } catch (Throwable $e) {
             if (file_exists($backupPath)) {
