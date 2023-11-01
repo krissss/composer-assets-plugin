@@ -16,12 +16,23 @@ class ExtraDTO extends BaseDTO
      */
     public $assets_pkgs = [];
 
+    /**
+     * type map
+     * @var string[]
+     */
+    private $assetPkgTypeMap = [
+        'url' => AssetPkgDTO::class,
+        'npm' => AssetPkgNpmDTO::class,
+        'github' => AssetPkgGithubDTO::class,
+    ];
+
     public function __construct(array $attrs)
     {
         parent::__construct($attrs);
 
         $this->assets_pkgs = array_map(function (array $asset) {
-            return new AssetPkgDTO($asset);
+            $assetClass = $this->assetPkgTypeMap[$asset['type'] ?? 'url'] ?? AssetPkgDTO::class;
+            return new $assetClass($asset);
         }, $this->assets_pkgs);
     }
 }
